@@ -1,17 +1,14 @@
 import serial, time
 from pprint import pprint ## don't think this is needed anymore
 from math import pi,cos,sin
-
 import matplotlib.pyplot as pyplot
 
 com_port  = 'COM11'
 baud_rate = 115200
 arduino = serial.Serial('COM10', 115200)
 
-X=[]
-Y=[]
-
 scansPerformed = 0
+
     
 def minimum_value(x):
     ##set to maximum range to avoid edge case of first element being -1, because then if statement will not execute
@@ -91,8 +88,6 @@ while True:
         quad4 = minimum_value(dist_mm_store[135:180])
 
         #print (dist_mm_store[0:44])
-        
-        scansPerformed += 1
 
         if (scansPerformed % 360 == 0):
             print (quad1,"\t",quad2,"\t",quad3,"\t",quad4, "\tScan", scansPerformed)
@@ -124,6 +119,8 @@ while True:
 
             print("The closest point is in", minQuad, "with a distance of", minVal, "mm")
             arduino.write(minVal)
+            
+            scansPerformed += 1
 
     except KeyboardInterrupt:
 
