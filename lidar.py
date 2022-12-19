@@ -1,59 +1,26 @@
-####################
-######Reference#####
-#https://xv11hacking.wikispaces.com/LIDAR+Sensor
-###################
-
 import serial, time
 from pprint import pprint ## don't think this is needed anymore
 from math import pi,cos,sin
 
 import matplotlib.pyplot as pyplot
 
-com_port  = 'COM11' ##change the COM port if required, check in Arduino IDE
+com_port  = 'COM11'
 baud_rate = 115200
 arduino = serial.Serial('COM10', 115200)
 
-##graphing
-#pyplot.axis([-6000, 6000, -6000, 6000])
 X=[]
 Y=[]
 
 scansPerformed = 0
-
-
-#pyplot.savefig('LIDAR_OUT.PNG')
-#pyplot.ion()
-
-def plot_data(angle,dist_mm):
-    angle_rad = angle * pi / 180.0
-    x = cos(angle_rad)*dist_mm
-    y = sin(angle_rad)*dist_mm
-
-    global X
-    global Y
-    X.append(x)
-    Y.append(y)
-
-def plot_finalize():
-
-    global X
-    global Y
-    if X != 6001 and Y != 6001:
-        #pyplot.scatter(X,Y)
-        #pyplot.draw()
-        #pyplot.pause(0.01)
-        X=[]
-        Y=[]
-
-
-##find minimum value in list and return
+    
 def minimum_value(x):
     ##set to maximum range to avoid edge case of first element being -1, because then if statement will not execute
     min_val = 6001 
 
     for i in x[1:]:
+        
         if i < min_val and i >= 0:
-            #print i 
+            
             min_val = i
 
     return min_val
@@ -84,9 +51,6 @@ while True:
             ##add data to list, read again
             dati.append(b)
             b = (ord(ser.read(1)))
-
-            ##do not hog the processor power - Python hogs 100% CPU without this in infinite loops
-            #time.sleep(0.0001) 
         
         if len(dati)==21:
             #print(dati)
@@ -94,7 +58,6 @@ while True:
             dati[0]=((dati[0])-160)  
            
             for i in (1,2,3,4):
-                #print(dati[i*4])
                 ##128 is an error code
                 if dati[i*4] != 128:
                     ##if good data, convert value in dati to value in mm. code found online
@@ -130,7 +93,6 @@ while True:
         #print (dist_mm_store[0:44])
         
         scansPerformed += 1
-        #plot_finalize()
 
         if (scansPerformed % 360 == 0):
             print (quad1,"\t",quad2,"\t",quad3,"\t",quad4, "\tScan", scansPerformed)
