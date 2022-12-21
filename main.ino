@@ -1,10 +1,5 @@
 #include <RoboClaw.h>
 
-//char messageBuffer[3];
-//size_t bytesRecieved;
-
-//RoboClaw roboclaw(&Serial2, 10000);
-
 void setup() {
   //roboclaw.begin(38400);
   Serial.begin(115200);
@@ -13,31 +8,19 @@ void setup() {
 
 void loop() {
 
-  //int bytesQueued = Serial.readBytesUntil('\n', messageBuffer , 3);
+  long num = Serial.parseInt();
 
-  if (Serial.available() >= 3) {
+  if (num < 200 && num > 0) {
 
-    int num1 = Serial.read() * 100;
-    int num2 = Serial.read() * 10;
-    int num3 = Serial.read();
+    digitalWrite(LED_BUILTIN, HIGH);
+    Serial.println(num);
+    //roboclaw.ForwardM1(0x80, 0);
+    //roboclaw.ForwardM2(0x80, 0);
 
-    int num = num1 + num2 + num3;
+  } else {
 
-    if (num < 200) {
-
-      digitalWrite(LED_BUILTIN, HIGH);
-      //roboclaw.ForwardM1(0x80, 0);
-      //roboclaw.ForwardM2(0x80, 0);
-
-    }
-
-    else {
-
-      digitalWrite(LED_BUILTIN, LOW);
-      //roboclaw.ForwardM1(0x80, 64);
-      //roboclaw.ForwardM2(0x80, 64);
-
-    }
+    digitalWrite(LED_BUILTIN, LOW);
+    //roboclaw.ForwardM1(0x80, 64);
+    //roboclaw.ForwardM2(0x80, 64);
   }
 }
-
