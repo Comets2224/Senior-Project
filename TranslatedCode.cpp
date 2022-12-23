@@ -7,6 +7,13 @@ vector<int> distances = {23,12,62,34};
 int distanceMMStorage[180] = {0};
 int scansPerformed = 0;
 
+void setup() {
+
+    Serial.begin(115200)
+
+}
+    
+
 int findMinimumValue(vector<int> vect) {
     
     int minVal = 6001;
@@ -47,15 +54,15 @@ void printResult(vector<int>& ans)
     }
 }
 
-int main()
+void loop()
 {
     
     for(;;) {
         
-        //int b = Ord(Serial.read())
-        int b = 250; //Temporary declaration
+        int b = Ord(Serial.read())
+        //int b = 250; Temporary declaration
         
-        int data[] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}; //21 data values for testing
+        int data[] = {};
         
         for(;;) {
             
@@ -67,7 +74,7 @@ int main()
             
             distances.push_back(b); //append b to the dataset
             
-            //b = Ord(Serial.read())
+            b = Ord(Serial.read())
         }
         
         if (sizeof(data)/sizeof(data[0]) == 21) {
@@ -102,7 +109,7 @@ int main()
         
         if (scansPerformed % 360 == 0) {
             
-            cout<<quad1, quad2, quad3, quad4;
+            Serial.println(quad1, quad2, quad3, quad4);
             
             int minVal = 6001;
             int minQuad = 0;
@@ -139,5 +146,4 @@ int main()
             
         }
     }
-    return 0; 
 }
