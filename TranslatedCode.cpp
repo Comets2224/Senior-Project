@@ -17,8 +17,7 @@ int findMinimumValue(vector<int> vect) {
             
             minVal = i;
             
-        }
-        
+        }   
     }
     
     return minVal;
@@ -88,11 +87,8 @@ int main()
                         distanceMMStorage[angle] = distanceMM;
                         
                     }
-                    
                 } 
-                
             }
-            
         }
         
         int quad1 = findMinimumValue(slicing(distances, 0, 44));
@@ -142,9 +138,6 @@ int main()
             //include conditional statements for the quads 5-8 later.
             
         }
-        
     }
-    
-    return 0;
-    
+    return 0; 
 }
