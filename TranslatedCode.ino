@@ -16,40 +16,34 @@ void setup() {
 void loop() {
 
   int b = char(Serial2.read());
-  //int b = 250; Temporary declaration
 
-  vector<int> data = {};
-
-  for (;;) {
-
-    if (b == 250 && sizeof(data) / sizeof(data[0]) > 20) {
-
-      break;
-    }
-
-    data.push_back(b); //append b to the dataset
-
-    Serial.print("test");
+  while (b != 250) {
 
     b = char(Serial2.read());
+
   }
+  //once b == 250, data is proven to be OK, move on.
 
-  if (sizeof(data) / sizeof(data[0]) == 21) {
+  byte data[21] = {};
 
-    data[0] = ((data[0]) - 160);
+  Serial2.readBytesUntil(char(250), data, 21);
+  Serial.println("data requirements met");
 
-    for (int i = 1; i < 5; i++) {
+  data[0] = ((data[0]) - 160);
 
-      if (data[i * 4] != 128) {
+  for (int i = 1; i < 5; i++) {
 
-        int distanceMM = data[4 * i - 1] | ((data[4 * i] & 0x3f) << 8);
+    if (data[i * 4] != 128) {
 
-        int angle = data[0] * 4 + i + 1;
+      int distanceMM = data[4 * i - 1] | ((data[4 * i] & 0x3f) << 8);
 
-        if (angle < 181) {
+      Serial.println(distanceMM);
 
-          distanceMMStorage[angle] = distanceMM;
-        }
+      int angle = data[0] * 4 + i + 1;
+
+      if (angle < 181) {
+
+        distanceMMStorage[angle] = distanceMM;
       }
     }
   }
@@ -62,6 +56,8 @@ void loop() {
   //int quad6 = findMinimumValue(slicing(distances, 225, 269));
   //int quad7 = findMinimumValue(slicing(distances, 270, 314));
   //int quad8 = findMinimumValue(slicing(distances, 315, 359));
+
+  scansPerformed += 1;
 
   if (scansPerformed % 360 == 0) {
 
