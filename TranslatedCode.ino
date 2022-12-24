@@ -2,32 +2,45 @@
 #include <string>
 #include <vector>
 #include "bits/stdc++.h"
+#include <RoboClaw.h>
 using namespace std;
+
+RoboClaw roboclaw(&Serial2, 10000);
 
 int distanceMMStorage[180] = { 0 };
 int scansPerformed = 0;
 
 void setup() {
 
-  Serial.begin(115200);
+  Serial.begin(921600);
+  Serial1.begin(115200, SERIAL_8N1, 4, 2);
   Serial2.begin(115200, SERIAL_8N1, 16, 17);
+  roboclaw.begin(38400);
+
 }
 
 void loop() {
 
-  int b = char(Serial2.read());
+  byte data[22] = {};
 
-  while (b != 250) {
+  int bytesRead = Serial1.readBytesUntil(char(250), data, 22);
 
-    b = char(Serial2.read());
+  if (bytesRead != 21) {
 
-  }
-  //once b == 250, data is proven to be OK, move on.
+    //Serial.println("Bad data.");
 
-  byte data[21] = {};
+    for (int i = 0; i < bytesRead; i++) {
 
-  Serial2.readBytesUntil(char(250), data, 21);
-  Serial.println("data requirements met");
+      //Serial.print((int)data[i]);
+      //Serial.print("\t");
+
+    }
+
+    //Serial.println("");
+
+    return;
+
+  } 
 
   data[0] = ((data[0]) - 160);
 
@@ -37,21 +50,24 @@ void loop() {
 
       int distanceMM = data[4 * i - 1] | ((data[4 * i] & 0x3f) << 8);
 
-      Serial.println(distanceMM);
-
       int angle = data[0] * 4 + i + 1;
 
-      if (angle < 181) {
+      if (angle < 180) {
 
         distanceMMStorage[angle] = distanceMM;
+
+        //Serial.print(distanceMM);
+        //Serial.print(",");
+        //Serial.println(angle);
+
       }
     }
   }
 
-  int quad1 = *min_element(&(data[0]), &(data[44]));
-  int quad2 = *min_element(&(data[45]), &(data[89]));
-  int quad3 = *min_element(&(data[90]), &(data[134]));
-  int quad4 = *min_element(&(data[135]), &(data[180]));
+  int quad1 = *min_element(&(distanceMMStorage[0]), &(distanceMMStorage[44]));
+  int quad2 = *min_element(&(distanceMMStorage[45]), &(distanceMMStorage[89]));
+  int quad3 = *min_element(&(distanceMMStorage[90]), &(distanceMMStorage[134]));
+  int quad4 = *min_element(&(distanceMMStorage[135]), &(distanceMMStorage[180]));
   //int quad5 = findMinimumValue(slicing(distances, 180, 224));
   //int quad6 = findMinimumValue(slicing(distances, 225, 269));
   //int quad7 = findMinimumValue(slicing(distances, 270, 314));
@@ -61,10 +77,16 @@ void loop() {
 
   if (scansPerformed % 360 == 0) {
 
+    for (int i = 0; i < 181; i++) {
+
+      distanceMMStorage[i] = 6001;
+
+    }
+
     Serial.println(quad1);
-    Serial.print(quad2);
-    Serial.print(quad3);
-    Serial.print(quad4);
+    Serial.println(quad2);
+    Serial.println(quad3);
+    Serial.println(quad4);
 
     int minVal = 6001;
     int minQuad = 0;
@@ -94,6 +116,13 @@ void loop() {
     }
 
     //include conditional statements for the quads 5-8 later.
+
+
   }
   
+  roboclaw.ForwardM1(0x80, 64);
+  roboclaw.ForwardM2(0x80, 64);
+  roboclaw.ForwardM1(0x81, 64);
+  roboclaw.ForwardM2(0x81, 64);
+
 }
