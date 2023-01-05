@@ -3,18 +3,22 @@
 #include <vector>
 #include "bits/stdc++.h"
 #include <RoboClaw.h>
+
+//HardwareSerial LIDARSerial(1); //Initalize hardware serial with UART1
+
 using namespace std;
 
-RoboClaw roboclaw(&Serial2, 10000);
+RoboClaw roboclaw(&Serial, 10000);
 
 int distanceMMStorage[180] = { 0 };
 int scansPerformed = 0;
 
 void setup() {
 
-  Serial.begin(921600);
-  Serial1.begin(115200, SERIAL_8N1, 4, 2);
-  Serial2.begin(115200, SERIAL_8N1, 16, 17);
+  pinMode(LED_BUILTIN, OUTPUT);
+
+  Serial.begin(115200, SERIAL_8N1, 3, 1); //Motor Controllers
+  Serial2.begin(115200, SERIAL_8N1, 16, 17); //LIDAR
   roboclaw.begin(38400);
 
 }
@@ -23,7 +27,7 @@ void loop() {
 
   byte data[22] = {};
 
-  int bytesRead = Serial1.readBytesUntil(char(250), data, 22);
+  int bytesRead = Serial2.readBytesUntil(char(250), data, 22);
 
   if (bytesRead != 21) {
 
@@ -83,10 +87,10 @@ void loop() {
 
     }
 
-    Serial.println(quad1);
-    Serial.println(quad2);
-    Serial.println(quad3);
-    Serial.println(quad4);
+    //Serial.println(quad1);
+    //Serial.println(quad2);
+    //Serial.println(quad3);
+    //Serial.println(quad4);
 
     int minVal = 6001;
     int minQuad = 0;
@@ -117,12 +121,34 @@ void loop() {
 
     //include conditional statements for the quads 5-8 later.
 
+    //Serial.print(minVal);
+    //Serial.print(",");
+    //Serial.println(minQuad);
+    if (minVal < 200 && minVal > 0) {
+
+      digitalWrite(LED_BUILTIN, HIGH);
+
+      roboclaw.ForwardM1(0x80, 0);
+      roboclaw.BackwardM2(0x80, 0);
+      roboclaw.ForwardM1(0x81, 0);
+      roboclaw.BackwardM2(0x81, 0);
+
+    } else if (minVal > 199) {
+
+      digitalWrite(LED_BUILTIN, LOW);
+
+      roboclaw.ForwardM1(0x80, 16);
+      roboclaw.BackwardM2(0x80, 16);
+      roboclaw.ForwardM1(0x81, 16);
+      roboclaw.BackwardM2(0x81, 16);
+
+    }
+
+    if (minQuad == 1 || minQuad == 4) {
+
+    }
+
 
   }
-  
-  roboclaw.ForwardM1(0x80, 64);
-  roboclaw.ForwardM2(0x80, 64);
-  roboclaw.ForwardM1(0x81, 64);
-  roboclaw.ForwardM2(0x81, 64);
 
 }
